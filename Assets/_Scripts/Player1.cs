@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player1 : MonoBehaviour
 {
     [Header("Input")]
     public float Horizontal;
@@ -37,8 +37,6 @@ public class Player : MonoBehaviour
         GetInput();
         Move();
         Jump();
-        // 1 nam 1 nu 
-        // 
     }
 
     void Move()
@@ -53,7 +51,7 @@ public class Player : MonoBehaviour
         float targetSpeed = IsSprint ? SprintSpeed : MoveSpeed;
         if (Horizontal == 0 && Vertical == 0)
         {
-            targetSpeed = 0.0f; // Không di chuyển nếu không có input
+            targetSpeed = 0.0f; 
         }
         return targetSpeed;
     }
@@ -67,13 +65,12 @@ public class Player : MonoBehaviour
                               MainCamera.transform.eulerAngles.y;
 
             float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, TargetRotation, ref RotationVelocity, RotationSmoothTime);
-            transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f); // Xoay nhân vật theo góc
+            transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f); 
         }
     }
 
     private void ApplyMovement(float targetSpeed)
     {
-        // Vector3 inputDirection = new Vector3(Horizontal, 0.0f, Vertical).normalized;
         Vector3 targetDirection = Quaternion.Euler(0.0f, TargetRotation, 0.0f) * Vector3.forward;
 
         CharacterCtrl.Move(targetDirection.normalized * (targetSpeed * Time.deltaTime) +
