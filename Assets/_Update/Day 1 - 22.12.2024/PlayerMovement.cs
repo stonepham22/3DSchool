@@ -1,82 +1,117 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+[RequireComponent(typeof(CharacterController))]
+public class PlayerMovement : MyGameObjBehaviour
 {
-    [Header("Move")]
-    public float MoveSpeed = 5f;
-    public float SprintSpeed = 20f;
-    public float TargetRotation;
-    public Camera MainCamera;
-    public float RotationVelocity;
+    [Tooltip("Handles movement and collision for the player.")]
+    [SerializeField] private CharacterController _controller;
+
+    [Tooltip("Reference to the main camera used for player orientation.")]
+    [SerializeField] private Camera _mainCamera;
+    
+    [Tooltip("Move speed of the character in m/s")]
+    [SerializeField] private float _moveSpeed = 2.0f;
+
+    [Tooltip("Sprint speed of the character in m/s")]
+    [SerializeField] private float _sprintSpeed = 5.335f;
+
+    [Tooltip("How fast the character turns to face movement direction")]
     [Range(0.0f, 0.3f)]
-    public float RotationSmoothTime = 0.12f;
+    [SerializeField] private float _rotationSmoothTime = 0.12f;
 
+    [Tooltip("The current speed of the player.")]
+    [SerializeField] private float _speed;
 
-    [Header("Jump")]
-    public float JumpForce;
-    public float Gravity = -9.81f;
+    [Tooltip("The target rotation angle for the player, based on input.")]
+    private float _targetRotation;
 
-    public CharacterController CharacterCtrl;
+    [Tooltip("The current rotation velocity used for smooth turning.")]
+    private float _rotationVelocity;
 
-    void Start()
+    protected override void LoadComponents()
     {
-        CharacterCtrl = GetComponent<CharacterController>();
-        MainCamera = Camera.main;
+        ReferenceManager.Get<CharacterController>(transform, ref _controller);
+        _mainCamera = Camera.main;
     }
 
-    void Update()
+    private void Update()
     {
-        Move();
-        Jump();
-    }
-
-    void Move()
-    {
+        // Calculate speed based on input
         float targetSpeed = CalculateTargetSpeed();
-        RotateCharacter();
-        ApplyMovement(targetSpeed);
+
+        // Smoothly update the player's current speed
+        UpdateSpeed(targetSpeed);
+
+        // Get the input direction
+        Vector3 inputDirection = GetInputDirection();
+
+        // Rotate the player based on camera direction
+        RotatePlayer(inputDirection);
+
+        // Move the player
+        MovePlayer();
     }
 
+    /// <summary>
+    /// Calculates the target speed based on player input and sprint status.
+    /// </summary>
     private float CalculateTargetSpeed()
     {
-        float targetSpeed = InputManager.Instance.IsSprint ? SprintSpeed : MoveSpeed;
-        if (InputManager.Instance.Horizontal == 0 && InputManager.Instance.Vertical == 0)
-        {
-            targetSpeed = 0.0f; 
-        }
-        return targetSpeed;
+        // Get movement input from the InputManager
+        Vector2 input = new Vector2(InputManager.Ins.Horizontal, InputManager.Ins.Vertical);
+
+        // If there's no input, set target speed to 0
+        if (input == Vector2.zero) return 0.0f;
+
+        // Return sprint speed if sprinting, otherwise return normal move speed
+        return InputManager.Ins.IsSprint ? _sprintSpeed : _moveSpeed;
     }
 
-    private void RotateCharacter()
+    /// <summary>
+    /// Smoothly interpolates the current speed towards the target speed.
+    /// </summary>
+    private void UpdateSpeed(float targetSpeed)
     {
-        Vector3 inputDirection = new Vector3(InputManager.Instance.Horizontal, 0.0f, 
-                                                InputManager.Instance.Vertical).normalized;
-        if (InputManager.Instance.Horizontal != 0 && InputManager.Instance.Vertical != 0)
-        {
-            TargetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                              MainCamera.transform.eulerAngles.y;
-
-            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, TargetRotation, ref RotationVelocity, RotationSmoothTime);
-            transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f); 
-        }
+        _speed = Mathf.Lerp(_speed, targetSpeed, Time.deltaTime * 10.0f);
     }
 
-    private void ApplyMovement(float targetSpeed)
+    /// <summary>
+    /// Gets the player's normalized input direction.
+    /// </summary>
+    private Vector3 GetInputDirection()
     {
-        Vector3 targetDirection = Quaternion.Euler(0.0f, TargetRotation, 0.0f) * Vector3.forward;
-
-        CharacterCtrl.Move(targetDirection.normalized * (targetSpeed * Time.deltaTime) +
-                         new Vector3(0.0f, Gravity, 0.0f) * Time.deltaTime);
-
-        // _verticalVelocity 
+        Vector2 input = new Vector2(InputManager.Ins.Horizontal, InputManager.Ins.Vertical);
+        return new Vector3(input.x, 0.0f, input.y).normalized;
     }
 
-    void Jump()
+    /// <summary>
+    /// Rotates the player to face the input direction relative to the camera.
+    /// </summary>
+    private void RotatePlayer(Vector3 inputDirection)
     {
-        CharacterCtrl.Move(new Vector3(0, Gravity, 0) * Time.deltaTime +
-                            new Vector3(0, InputManager.Instance.Jump * Time.deltaTime * JumpForce, 0));
+        // Skip rotation if there's no input
+        if (inputDirection == Vector3.zero) return;
+
+        // Calculate the target rotation based on input and camera direction
+        _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+                          _mainCamera.transform.eulerAngles.y;
+
+        // Smoothly interpolate to the target rotation
+        float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, _rotationSmoothTime);
+
+        // Apply the rotation to the player
+        transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
     }
+
+
+    /// <summary>
+    /// Moves the player in the direction they are facing.
+    /// </summary>
+    private void MovePlayer()
+    {
+        Vector3 moveDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+        _controller.Move(moveDirection.normalized * (_speed * Time.deltaTime));
+    }
+
 
 }

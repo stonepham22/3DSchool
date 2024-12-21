@@ -13,7 +13,7 @@ public abstract class Singleton<T> : MonoBehaviour where T : Singleton<T>
     /// <summary>
     /// Provides access to the singleton instance. Logs an error if the instance is not set.
     /// </summary>
-    public static T Instance
+    public static T Ins
     {
         get
         {
