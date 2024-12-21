@@ -30,7 +30,7 @@ public class PlayerMovement : MyGameObjBehaviour
 
     protected override void LoadComponents()
     {
-        ReferenceManager.Get<CharacterController>(transform, ref _controller);
+        MyGetReference.Get<CharacterController>(transform, ref _controller);
         _mainCamera = Camera.main;
     }
 

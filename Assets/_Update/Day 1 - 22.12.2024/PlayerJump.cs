@@ -30,7 +30,7 @@ public class PlayerJump : MyGameObjBehaviour
 
     protected override void LoadComponents()
     {
-        ReferenceManager.Get<CharacterController>(transform, ref _controller);
+        MyGetReference.Get<CharacterController>(transform, ref _controller);
         _jumpTimeoutDelta = _jumpTimeout;
     }
 
@@ -81,7 +81,7 @@ public class PlayerJump : MyGameObjBehaviour
         _controller.Move(verticalMovement * Time.deltaTime);
     }
 
-    private bool IsGrounded()
+    public bool IsGrounded()
     {
         // 
         return Physics.Raycast(transform.position, Vector3.down, _groundCheckDistance,

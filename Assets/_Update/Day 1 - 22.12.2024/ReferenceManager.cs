@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class ReferenceManager 
+public static class MyGetReference 
 {
     public static void Get<T>(Transform transform, ref T component) where T : Component
     {

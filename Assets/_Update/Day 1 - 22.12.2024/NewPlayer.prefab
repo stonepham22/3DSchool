@@ -968,7 +968,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7848601522008442679}
   m_LocalRotation: {x: 0.14780942, y: -0, z: -0, w: 0.9890159}
-  m_LocalPosition: {x: 0, y: 6, z: -10}
+  m_LocalPosition: {x: 0, y: 2.5, z: -4.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -988,6 +988,7 @@ GameObject:
   - component: {fileID: 2161693483152426916}
   - component: {fileID: 5239614906463200532}
   - component: {fileID: 5300615176388591897}
+  - component: {fileID: 619910267}
   m_Layer: 0
   m_Name: NewPlayer
   m_TagString: Untagged
@@ -1023,7 +1024,7 @@ Animator:
   m_GameObject: {fileID: 8051884954381408224}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: f21c9d7ca4fb9aa4a89b30e4b43b35f4, type: 3}
-  m_Controller: {fileID: 9100000, guid: 8b9a677f24793ba45bdc27a1dab7745e, type: 2}
+  m_Controller: {fileID: 9100000, guid: de500eb40ccdd25409d70f20cc2c44ed, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1045,13 +1046,13 @@ CharacterController:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Height: 2
-  m_Radius: 0.5
+  m_Height: 0.9
+  m_Radius: 0.2
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!114 &5239614906463200532
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1090,6 +1091,19 @@ MonoBehaviour:
   _sprintSpeed: 5.335
   _rotationSmoothTime: 0.12
   _speed: 0
+--- !u!114 &619910267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8051884954381408224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20247831758b7984c8d18abd7bb7d68a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animator: {fileID: 233843778284782013}
 --- !u!1 &8078041683904157444
 GameObject:
   m_ObjectHideFlags: 0
