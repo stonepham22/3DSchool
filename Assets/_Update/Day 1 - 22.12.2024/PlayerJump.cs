@@ -21,12 +21,12 @@ public class PlayerJump : MyGameObjBehaviour
     [Tooltip("Cooldown timer between jumps.")]
     private float _jumpTimeoutDelta;
 
+    [Header("Ground Check")]    
     [Tooltip("The layers considered as ground for the player.")]
     [SerializeField] private LayerMask _groundLayers;
 
     [Tooltip("The distance used to check if the player is grounded.")]
     [SerializeField] private float _groundCheckDistance = 0.2f;
-
 
     protected override void LoadComponents()
     {
