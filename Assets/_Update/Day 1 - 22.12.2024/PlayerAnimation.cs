@@ -19,14 +19,9 @@ public class PlayerAnimation : BaseAnimation
 
     public void TransitionBaseOnInput()
     {
-        float horizontal = InputManager.Ins.Horizontal;
-
-        float vertical = InputManager.Ins.Vertical;
-
-        bool isSprinting = InputManager.Ins.IsSprint;
 
         // Check if the player is in the air by calling the IsGrounded() method from PlayerJump.
-        if (!GetComponent<PlayerJump>().IsGrounded() && InputManager.Ins.Jump != 0)
+        if (!_playerJump.IsGrounded() && InputManager.Ins.Jump != 0)
         {
             // If the player is airborne, transition to the Jump animation state.
             stateMachine.TransitionTo(stateMachine.JumpState);
@@ -35,19 +30,13 @@ public class PlayerAnimation : BaseAnimation
             return;
         }
 
-        // If no input is detected (input magnitude is 0), transition to the Idle animation state.
-        // if (inputMagnitude == 0)
-        // {
-        //     stateMachine.TransitionTo(stateMachine.IdleState);
-        // }
-
-        if (horizontal == 0 && vertical == 0)
+        if (InputManager.Ins.Horizontal == 0 && InputManager.Ins.Vertical == 0)
         {
             stateMachine.TransitionTo(stateMachine.IdleState);
         }
 
         // If the player is sprinting, transition to the Run animation state.
-        else if (isSprinting)
+        else if (InputManager.Ins.IsSprint)
         {
             stateMachine.TransitionTo(stateMachine.RunState);
         }
