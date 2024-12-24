@@ -1,6 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
+
 public class PlayerMovement : MyGameObjBehaviour
 {
     [Tooltip("Handles movement and collision for the player.")]

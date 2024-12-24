@@ -75,8 +75,7 @@ public class Player1 : MonoBehaviour
 
         CharacterCtrl.Move(targetDirection.normalized * (targetSpeed * Time.deltaTime) +
                          new Vector3(0.0f, Gravity, 0.0f) * Time.deltaTime);
-
-        // _verticalVelocity 
+ 
     }
 
     void Jump()
