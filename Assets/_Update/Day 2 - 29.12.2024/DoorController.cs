@@ -18,7 +18,6 @@ public class DoorController : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Player entered trigger with door");
             CancelInvoke("CloseDoor"); // Hủy việc đóng cửa nếu đang thực hiện
 
             // Xác định hướng của người chơi so với cửa
@@ -42,7 +41,6 @@ public class DoorController : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Player exited trigger with door");
             CancelInvoke("OpenDoor"); // Hủy việc mở cửa nếu đang thực hiện
             InvokeRepeating("CloseDoor", 0f, 0.01f);
         }
