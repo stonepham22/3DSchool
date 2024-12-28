@@ -5,14 +5,13 @@ public class DoorController : MonoBehaviour
     public float openAngle = 90f; // Góc mở cửa
     public float closedAngle = 0f; // Góc đóng cửa
     public float openSpeed = 2f; // Tốc độ xoay cửa
-    private float targetAngle; // Góc mục tiêu
     private bool isRotating = false; // Trạng thái cửa đang xoay
-    private bool isFullyOpened = false; // Trạng thái cửa đã mở hoàn toàn
-    private bool playerExited = false; // Trạng thái người chơi đã rời khỏi vùng kích hoạt
+    private float targetOpen; // Góc mục tiêu khi mở cửa
 
     private void Start()
     {
-        targetAngle = closedAngle;
+        // Đặt góc ban đầu của cửa là đóng
+        UpdateDoorAngleY(closedAngle);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -20,24 +19,22 @@ public class DoorController : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             Debug.Log("Player entered trigger with door");
+            CancelInvoke("CloseDoor"); // Hủy việc đóng cửa nếu đang thực hiện
 
             // Xác định hướng của người chơi so với cửa
-            Vector3 directionToPlayer = other.transform.position - transform.position;
+            Vector3 directionToPlayer = other.transform.forward;
             float dotProduct = Vector3.Dot(transform.forward, directionToPlayer);
 
             if (dotProduct > 0)
             {
-                targetAngle = -openAngle; // Mở cửa theo hướng ngược lại
+                targetOpen = openAngle; // Mở cửa theo hướng ngược lại
             }
             else
             {
-                targetAngle = openAngle; // Mở cửa theo hướng này
+                targetOpen = -openAngle; // Mở cửa theo hướng này
             }
 
-            playerExited = false; // Đặt lại trạng thái người chơi đã rời khỏi vùng kích hoạt
-
-            if (!isRotating)
-                InvokeRepeating("RotateDoor", 0f, Time.deltaTime); // Bắt đầu xoay cửa
+            InvokeRepeating("OpenDoor", 0f, 0.01f);
         }
     }
 
@@ -46,50 +43,46 @@ public class DoorController : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             Debug.Log("Player exited trigger with door");
-            playerExited = true; // Đánh dấu người chơi đã rời khỏi vùng kích hoạt
-
-            // Nếu cửa đã mở hoàn toàn, bắt đầu đóng cửa
-            if (isFullyOpened && !isRotating)
-            {
-                targetAngle = closedAngle;
-                InvokeRepeating("RotateDoor", 0f, Time.deltaTime); // Bắt đầu xoay cửa để đóng lại
-            }
+            CancelInvoke("OpenDoor"); // Hủy việc mở cửa nếu đang thực hiện
+            InvokeRepeating("CloseDoor", 0f, 0.01f);
         }
     }
 
-    private void RotateDoor()
+    private void OpenDoor()
     {
         isRotating = true;
 
         // Lấy góc hiện tại
-        float currentAngle = Mathf.LerpAngle(transform.localEulerAngles.y, targetAngle, Time.deltaTime * openSpeed);
+        float currentAngle = Mathf.LerpAngle(transform.localEulerAngles.y, targetOpen, Time.deltaTime * openSpeed);
 
         // Cập nhật góc xoay của cửa
         UpdateDoorAngleY(currentAngle);
 
-        // Kiểm tra nếu đã đạt góc mục tiêu
-        if (Mathf.Abs(currentAngle - targetAngle) < 0.1f)
+        // Kiểm tra nếu đã đạt góc mở mục tiêu
+        if (Mathf.Abs(currentAngle - targetOpen) < 0.1f)
         {
-            UpdateDoorAngleY(targetAngle);
-            CancelInvoke("RotateDoor"); // Dừng việc xoay cửa
+            UpdateDoorAngleY(targetOpen);
+            CancelInvoke("OpenDoor"); // Dừng việc xoay cửa khi mở
             isRotating = false;
+        }
+    }
 
-            // Đặt cờ khi cửa đã mở hoàn toàn
-            if (targetAngle == openAngle || targetAngle == -openAngle)
-            {
-                isFullyOpened = true;
+    private void CloseDoor()
+    {
+        isRotating = true;
 
-                // Nếu người chơi đã rời khỏi vùng kích hoạt, bắt đầu đóng cửa
-                if (playerExited)
-                {
-                    targetAngle = closedAngle;
-                    InvokeRepeating("RotateDoor", 0f, Time.deltaTime); // Bắt đầu xoay cửa để đóng lại
-                }
-            }
-            else if (targetAngle == closedAngle)
-            {
-                isFullyOpened = false;
-            }
+        // Lấy góc hiện tại
+        float currentAngle = Mathf.LerpAngle(transform.localEulerAngles.y, closedAngle, Time.deltaTime * openSpeed);
+
+        // Cập nhật góc xoay của cửa
+        UpdateDoorAngleY(currentAngle);
+
+        // Kiểm tra nếu đã đạt góc đóng mục tiêu
+        if (Mathf.Abs(currentAngle - closedAngle) < 0.1f)
+        {
+            UpdateDoorAngleY(closedAngle);
+            CancelInvoke("CloseDoor"); // Dừng việc xoay cửa khi đóng
+            isRotating = false;
         }
     }
 
