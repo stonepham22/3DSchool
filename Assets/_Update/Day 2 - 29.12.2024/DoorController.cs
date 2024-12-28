@@ -7,6 +7,8 @@ public class DoorController : MonoBehaviour
     public float openSpeed = 2f; // Tốc độ xoay cửa
     private float targetAngle; // Góc mục tiêu
     private bool isRotating = false; // Trạng thái cửa đang xoay
+    private bool isFullyOpened = false; // Trạng thái cửa đã mở hoàn toàn
+    private bool playerExited = false; // Trạng thái người chơi đã rời khỏi vùng kích hoạt
 
     private void Start()
     {
@@ -18,7 +20,22 @@ public class DoorController : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             Debug.Log("Player entered trigger with door");
-            targetAngle = openAngle;
+
+            // Xác định hướng của người chơi so với cửa
+            Vector3 directionToPlayer = other.transform.position - transform.position;
+            float dotProduct = Vector3.Dot(transform.forward, directionToPlayer);
+
+            if (dotProduct > 0)
+            {
+                targetAngle = -openAngle; // Mở cửa theo hướng ngược lại
+            }
+            else
+            {
+                targetAngle = openAngle; // Mở cửa theo hướng này
+            }
+
+            playerExited = false; // Đặt lại trạng thái người chơi đã rời khỏi vùng kích hoạt
+
             if (!isRotating)
                 InvokeRepeating("RotateDoor", 0f, Time.deltaTime); // Bắt đầu xoay cửa
         }
@@ -29,9 +46,14 @@ public class DoorController : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             Debug.Log("Player exited trigger with door");
-            targetAngle = closedAngle;
-            if (!isRotating)
-                InvokeRepeating("RotateDoor", 0f, Time.deltaTime); // Bắt đầu xoay cửa
+            playerExited = true; // Đánh dấu người chơi đã rời khỏi vùng kích hoạt
+
+            // Nếu cửa đã mở hoàn toàn, bắt đầu đóng cửa
+            if (isFullyOpened && !isRotating)
+            {
+                targetAngle = closedAngle;
+                InvokeRepeating("RotateDoor", 0f, Time.deltaTime); // Bắt đầu xoay cửa để đóng lại
+            }
         }
     }
 
@@ -51,6 +73,23 @@ public class DoorController : MonoBehaviour
             UpdateDoorAngleY(targetAngle);
             CancelInvoke("RotateDoor"); // Dừng việc xoay cửa
             isRotating = false;
+
+            // Đặt cờ khi cửa đã mở hoàn toàn
+            if (targetAngle == openAngle || targetAngle == -openAngle)
+            {
+                isFullyOpened = true;
+
+                // Nếu người chơi đã rời khỏi vùng kích hoạt, bắt đầu đóng cửa
+                if (playerExited)
+                {
+                    targetAngle = closedAngle;
+                    InvokeRepeating("RotateDoor", 0f, Time.deltaTime); // Bắt đầu xoay cửa để đóng lại
+                }
+            }
+            else if (targetAngle == closedAngle)
+            {
+                isFullyOpened = false;
+            }
         }
     }
 
