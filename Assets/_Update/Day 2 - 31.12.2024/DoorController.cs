@@ -5,7 +5,7 @@ public class DoorController : MonoBehaviour
     public float openAngle = 90f; // Góc mở cửa
     public float closedAngle = 0f; // Góc đóng cửa
     public float openSpeed = 2f; // Tốc độ xoay cửa
-    private bool isRotating = false; // Trạng thái cửa đang xoay
+    // private bool isRotating = false; // Trạng thái cửa đang xoay
     private float targetOpen; // Góc mục tiêu khi mở cửa
 
     private void Start()
@@ -48,7 +48,7 @@ public class DoorController : MonoBehaviour
 
     private void OpenDoor()
     {
-        isRotating = true;
+        // isRotating = true;
 
         // Lấy góc hiện tại
         float currentAngle = Mathf.LerpAngle(transform.localEulerAngles.y, targetOpen, Time.deltaTime * openSpeed);
@@ -61,13 +61,13 @@ public class DoorController : MonoBehaviour
         {
             UpdateDoorAngleY(targetOpen);
             CancelInvoke("OpenDoor"); // Dừng việc xoay cửa khi mở
-            isRotating = false;
+            // isRotating = false;
         }
     }
 
     private void CloseDoor()
     {
-        isRotating = true;
+        // isRotating = true;
 
         // Lấy góc hiện tại
         float currentAngle = Mathf.LerpAngle(transform.localEulerAngles.y, closedAngle, Time.deltaTime * openSpeed);
@@ -80,7 +80,7 @@ public class DoorController : MonoBehaviour
         {
             UpdateDoorAngleY(closedAngle);
             CancelInvoke("CloseDoor"); // Dừng việc xoay cửa khi đóng
-            isRotating = false;
+            // isRotating = false;
         }
     }
 
