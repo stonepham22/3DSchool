@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerInteract : MonoBehaviour
 {
+    public bool IsInteracting;
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.E))
@@ -22,6 +23,7 @@ public class PlayerInteract : MonoBehaviour
 
     public NPCInteractable GetInteractableObject()
     {
+        if(IsInteracting) return null;
         List<NPCInteractable> npcInteractableList = new List<NPCInteractable>();
         float interacRange = 4f;
         Collider[] colliderArray = Physics.OverlapSphere(transform.position, interacRange);

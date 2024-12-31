@@ -8,9 +8,11 @@ public class PlayerInteracUI : MonoBehaviour
     [SerializeField] private GameObject _containerObj;
     [SerializeField] private PlayerInteract _playerInteract;
     [SerializeField] private TextMeshProUGUI _interactText;
+    [SerializeField] private Transform _panelDialog;
 
     void Update()
     {
+        if(_panelDialog.gameObject.activeSelf) return;
         if(_playerInteract.GetInteractableObject() != null)
         {
             Show(_playerInteract.GetInteractableObject());
@@ -27,7 +29,7 @@ public class PlayerInteracUI : MonoBehaviour
         _interactText.text = npcInteractable.GetInteractText();
     }
 
-    void Hide()
+    public void Hide()
     {
         _containerObj.SetActive(false);
     }   
